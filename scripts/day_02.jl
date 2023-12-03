@@ -1,4 +1,4 @@
-games = readlines("inputs/day_02.txt")
+lines = readlines("inputs/day_02.txt")
 
 # Day Two, Part A
 struct Game
@@ -26,6 +26,5 @@ mask = is_possible.(games)
 println("Day Two Part A Answer: $(sum(g.ID for g in games[mask]))")
 
 # Day Two, Part B
-test = readlines("inputs/day_02_tests.txt")
 power(g::Game) = g.reds * g.greens * g.blues
 println("Day Two Part B Answer: $(sum(power.(games)))")

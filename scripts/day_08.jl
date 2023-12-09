@@ -9,7 +9,7 @@ end
 
 function parse(lines::Vector{String})
     instructions = collect(lines[1])
-    nodes = [Node(line[1:3], line[8:10], line[13:15]) for line in lines[3:end]]
+    nodes = [Node(line[1:3], line[8:10], line[13:15]) for line ∈ lines[3:end]]
     return instructions, nodes
 end
 
@@ -29,9 +29,10 @@ function solve_part_a(nodes::Vector{Node}, instructions::Vector{Char})
     while node != "ZZZ"
         i = mod(n+1, len) > 0 ? mod(n+1, len) : len 
         which = instructions[i]
-        node = next_node(nodes, node, which)    
+        node = next_node(nodes, node, which)
         n += 1
     end
+
     return n
 end
 
@@ -44,7 +45,6 @@ next_node(nodes::Vector{Node}, node::Node, which::Char) = next_node(nodes, node.
 
 function solve_node(nodes::Vector{Node}, start_node::Node, instructions::Vector{Char})
     # Assuming that every A-node has exactly one corresponding Z-node
-    # because otherwise, the brute force way (at the bottom) would take hours
     n = 0
     len = length(instructions)
     z_nodes = []
@@ -59,17 +59,17 @@ function solve_node(nodes::Vector{Node}, start_node::Node, instructions::Vector{
             push!(z_nodes, current_node)
         end
     end
-    
+
     return n
 end
 
-prime_factors(n::Int) = [i for i in 2:(n-1) if mod(n, i) == 0]
+prime_factors(n::Int) = [i for i ∈ 2:(n-1) if mod(n, i) == 0]
 
 a_nodes = nodes[endswith.(nodes, 'A')]
-steps_per_node = [solve_node(nodes, node, instructions) for node in a_nodes]
+steps_per_node = [solve_node(nodes, node, instructions) for node ∈ a_nodes]
 unique_primes = Set()
-for step in steps_per_node
-    for factor in prime_factors(step)
+for step ∈ steps_per_node
+    for factor ∈ prime_factors(step)
        push!(unique_primes, factor)
     end
 end

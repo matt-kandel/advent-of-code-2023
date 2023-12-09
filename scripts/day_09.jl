@@ -3,14 +3,12 @@ parse_line(line::String) = parse.(Int, split(line, " "))
 sequences = parse_line.(readlines("inputs/day_09.txt"))
 
 # Part A
-find_next(sequence::Vector{Int}) = sequence[2:end] .- sequence[1:end-1]
-
 function find_differences(sequence::Vector{Int})
     differences = []
-    next_differences = find_next(sequence)
+    next_differences = diff(sequence)
     while any(next_differences .!= 0)
         push!(differences, next_differences)
-        next_differences = find_next(next_differences)
+        next_differences = diff(next_differences)
     end
     return differences
 end

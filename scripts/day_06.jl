@@ -12,7 +12,7 @@ function parse_line(line::String)
 end
 
 times, distances = parse_line.(lines)
-races = [Race(arg...) for arg ∈ zip(times, distances)]
+races = Race.(times, distances)
 
 # Part A
 possible_distances(race::Race) = [(t)*(race.time - t) for t ∈ 0:race.time]

@@ -1,5 +1,5 @@
 # Setup
-puzzle_input = read(".\\inputs\\day_01.txt", String)
+puzzle_input = read(".\\inputs\\day_14.txt", String)
 function parse_input(s::String)
     hcat([collect(x) for x in split(s, "\r\n")]...) |> permutedims
 end

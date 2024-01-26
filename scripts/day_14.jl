@@ -3,13 +3,12 @@ puzzle_input = read(".\\inputs\\day_14.txt", String)
 function parse_input(s::String)
     hcat([collect(x) for x in split(s, "\r\n")]...) |> permutedims
 end
-
 original_grid = parse_input(puzzle_input)
 grid = copy(original_grid)
 
 # Part A
 # Start from the end, and for each index check everything north
-function tilt_column_north(column)
+function tilt_column_north!(column)
     for i in collect(eachindex(column))
         for j in i:-1:2
             if (column[j] == 'O') & (column[j-1] == '.')
@@ -21,15 +20,14 @@ end
 
 function score(grid)
     num_Os = count(==('O'), grid, dims=2)
-    return sum(num_Os .* collect(size(grid)[2]:-1:1))
+    sum(num_Os .* collect(size(grid)[2]:-1:1))
 end
 
-# modifies grid, returns nothing
-tilt_column_north.(eachcol(grid))
+tilt_column_north!.(eachcol(grid))
 println("Part A score is $(score(grid))")
 
 # Part B
-function tilt_column_south(column)
+function tilt_column_south!(column)
     for i in collect(reverse(eachindex(column)))
         for j in 1:i-1
             if (column[j] == 'O') & (column[j+1] == '.')
@@ -39,28 +37,27 @@ function tilt_column_south(column)
     end
 end
 
-# "tilt_column_north" and "tilt_column_south" are misnomers
+# "tilt_column_north!" and "tilt_column_south!" are misnomers
 # Maybe I should have called them "tilt_positive" and "tilt_negative"?
-tilt_north(grid) = tilt_column_north.(eachcol(grid))
-tilt_south(grid) = tilt_column_south.(eachcol(grid))
-tilt_west(grid) = tilt_column_north.(eachrow(grid))
-tilt_east(grid) = tilt_column_south.(eachrow(grid))
+tilt_north!(grid) = tilt_column_north!.(eachcol(grid))
+tilt_south!(grid) = tilt_column_south!.(eachcol(grid))
+tilt_west!(grid) = tilt_column_north!.(eachrow(grid))
+tilt_east!(grid) = tilt_column_south!.(eachrow(grid))
 
-# Again, modifies grid, returns nothing
-function spin_cycle(grid)
-    tilt_north(grid)
-    tilt_west(grid)
-    tilt_south(grid)
-    tilt_east(grid)
+function spin_cycle!(grid)
+    tilt_north!(grid)
+    tilt_west!(grid)
+    tilt_south!(grid)
+    tilt_east!(grid)
 end
 
 # Find a repeating sequence
 grid = copy(original_grid)
 grids = []
 for i in 1:1_000
-    spin_cycle(grid)
+    spin_cycle!(grid)
     if grid ∈ grids
-        spin_cycle(grid)
+        spin_cycle!(grid)
         push!(grids, copy(grid))   
         global a # not good practice to use globals, but whatever
         global b

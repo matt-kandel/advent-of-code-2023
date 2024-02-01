@@ -34,25 +34,39 @@ function read_valid_numbers(grid)
     cells = read_grid_as_matrix_of_cells(grid)
     m, n = size(cells)
     valid_numbers::Vector{Int} = []
-    is_valid_number::Bool = false
+    is_valid::Bool = false
     number = ""
     for i in 1:m
         for j in 1:n
             cell = cells[i, j]
-            symbol, is_valid_number = cell.symbol, is_valid_number || cell.is_adjacent_to_symbol
+            symbol = cell.symbol
             if isnumeric(symbol)
+                is_valid = is_valid || cell.is_adjacent_to_symbol
                 number *= symbol
             end
             if !isnumeric(symbol) || j == n
-                if is_valid_number && number != ""
+                if is_valid && number != ""
                     push!(valid_numbers, parse(Int, number))
                 end
                 number = ""
-                is_valid_number = false
+            is_valid = false
             end
         end
     end
     return valid_numbers
 end
-#1301068 and 544825 are both too high
-print("Part A answer: $(sum(read_valid_numbers(grid)))")
+println("Part A answer: $(sum(read_valid_numbers(grid)))")
+
+# Part B
+# Not going to do this right now, but just sketching out some thoughts
+# It seems easier to collect the numbers rather than the stars
+# so make some kind of loop that will iterate through the grid
+# As you go, increment the number similar to above with number *= symbol
+# and you can keep appending coordinates to star_neighbors
+# then, once you have all the PartNumbers, invert it somehow
+# so that we have a dict of {star_neighbors: PartNumbers::Vector{Int}}
+# then, the rest of the problem is easy
+mutable struct PartNumber
+    number::Int # This will grow like above with *= operator
+    star_neighbors::Set{Tuple{Int}} # a set of unique coordinate pairs (i, j)
+end

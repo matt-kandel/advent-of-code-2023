@@ -67,6 +67,47 @@ println("Part A answer: $(sum(read_valid_numbers(grid)))")
 # so that we have a dict of {star_neighbors: PartNumbers::Vector{Int}}
 # then, the rest of the problem is easy
 mutable struct PartNumber
-    number::Int # This will grow like above with *= operator
-    star_neighbors::Set{Tuple{Int}} # a set of unique coordinate pairs (i, j)
+    number::String # This will grow like above with *= operator
+    star_neighbors::Set # a set of unique coordinate pairs (i, j)
 end
+
+function find_star_neighbors(i, j, grid)
+    # for my purposes, a value is adjacent to itself
+    m, n = size(grid)
+    eyes = (maximum([i-1, 1])):(minimum([i+1, m]))
+    jays = (maximum([j-1, 1])):(minimum([j+1, n]))
+    star_coordinates::Set = Set()
+    for i in eyes
+        for j in jays
+            if grid[i, j] == '*'
+                push!(star_coordinates, (i, j))
+            end
+        end
+    end
+    return star_coordinates
+end
+
+function create_part_numbers(grid)
+    part_numbers::Vector{PartNumber} = []
+    m, n = size(grid)
+    part_number = PartNumber("", Set())
+    star_neighbors::Set = Set()
+    for i in 1:m
+        for j in 1:n
+            char = grid[i, j]
+            if isnumeric(char)
+               part_number.number *= char
+               part_number.star_neighbors = union(part_number.star_neighbors, find_star_neighbors(i, j, grid))
+            end
+            if !isnumeric(char) || j == n
+                if part_number.number != ""
+                    push!(part_numbers, part_number)
+                end
+                part_number = PartNumber("", Set())
+                star_neighbors = Set()
+            end
+        end
+    end
+    return part_numbers
+end
+create_part_numbers(grid)

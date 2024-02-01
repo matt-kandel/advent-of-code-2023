@@ -15,7 +15,7 @@ function is_adjacent_to_symbol(i, j, grid)
 end
 
 struct Cell
-    symbol::Char
+    char::Char
     is_adjacent_to_symbol::Bool
 end
 
@@ -39,12 +39,12 @@ function read_valid_numbers(grid)
     for i in 1:m
         for j in 1:n
             cell = cells[i, j]
-            symbol = cell.symbol
-            if isnumeric(symbol)
+            char = cell.char
+            if isnumeric(char)
                 is_valid = is_valid || cell.is_adjacent_to_symbol
-                number *= symbol
+                number *= char
             end
-            if !isnumeric(symbol) || j == n
+            if !isnumeric(char) || j == n
                 if is_valid && number != ""
                     push!(valid_numbers, parse(Int, number))
                 end
@@ -61,7 +61,7 @@ println("Part A answer: $(sum(read_valid_numbers(grid)))")
 # Not going to do this right now, but just sketching out some thoughts
 # It seems easier to collect the numbers rather than the stars
 # so make some kind of loop that will iterate through the grid
-# As you go, increment the number similar to above with number *= symbol
+# As you go, increment the number similar to above with number *= char
 # and you can keep appending coordinates to star_neighbors
 # then, once you have all the PartNumbers, invert it somehow
 # so that we have a dict of {star_neighbors: PartNumbers::Vector{Int}}

@@ -49,7 +49,7 @@ function read_valid_numbers(grid)
                     push!(valid_numbers, parse(Int, number))
                 end
                 number = ""
-            is_valid = false
+                is_valid = false
             end
         end
     end

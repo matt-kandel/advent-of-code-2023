@@ -58,15 +58,7 @@ end
 println("Part A answer: $(sum(read_valid_numbers(grid)))")
 
 # Part B
-# Not going to do this right now, but just sketching out some thoughts
-# It seems easier to collect the numbers rather than the stars
-# so make some kind of loop that will iterate through the grid
-# As you go, increment the number similar to above with number *= char
-# and you can keep appending coordinates to star_neighbors
-# then, once you have all the PartNumbers, invert it somehow
-# so that we have a dict of {star_neighbors: PartNumbers::Vector{Int}}
-# then, the rest of the problem is easy
-mutable struct PartNumber
+mutable struct Part
     number::String # This will grow like above with *= operator
     star_neighbors::Set # a set of unique coordinate pairs (i, j)
 end
@@ -87,27 +79,59 @@ function find_star_neighbors(i, j, grid)
     return star_coordinates
 end
 
-function create_part_numbers(grid)
-    part_numbers::Vector{PartNumber} = []
+function create_parts(grid)
+    parts::Vector{Part} = []
     m, n = size(grid)
-    part_number = PartNumber("", Set())
+    part = Part("", Set())
     star_neighbors::Set = Set()
     for i in 1:m
         for j in 1:n
             char = grid[i, j]
             if isnumeric(char)
-               part_number.number *= char
-               part_number.star_neighbors = union(part_number.star_neighbors, find_star_neighbors(i, j, grid))
+               part.number *= char
+               part.star_neighbors = union(part.star_neighbors, find_star_neighbors(i, j, grid))
             end
             if !isnumeric(char) || j == n
-                if part_number.number != ""
-                    push!(part_numbers, part_number)
+                if part.number != ""
+                    push!(parts, part)
                 end
-                part_number = PartNumber("", Set())
+                part = Part("", Set())
                 star_neighbors = Set()
             end
         end
     end
-    return part_numbers
+    return parts
 end
-create_part_numbers(grid)
+parts = create_parts(grid)
+
+# we can ignore the empty ones
+parts = filter(x -> !isempty(x.star_neighbors), parts)
+
+# Flip it so that we're looking up Parts by star
+# instead of stars by Parts
+# for stars Dict: keys are * coordinates as tuple (i, j)
+# values are vector of all the (not unique) parts
+# that have this star as a neighbor
+stars = Dict()
+for part in parts
+    for coordinate in part.star_neighbors
+        if haskey(stars, coordinate)
+            stars[coordinate] = vcat(stars[coordinate], parse(Int, part.number))
+        else
+            stars[coordinate] = [parse(Int, part.number)]
+        end
+    end
+end
+
+# vector of vector of Ints
+part_values = values(stars) |> collect
+function score(part_values)
+    points = 0
+    for vector ∈ part_values
+        if length(vector) == 2
+            points += vector[1] * vector[2]
+        end
+    end
+    return points
+end
+println("Part B answer: $(score(part_values))")
